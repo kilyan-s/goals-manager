@@ -39,5 +39,4 @@ class GoalCell: UITableViewCell {
             self.completionView.isHidden = true
         }
     }
-
 }
