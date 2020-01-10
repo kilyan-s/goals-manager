@@ -27,10 +27,10 @@ class GoalCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    func configureCell(description: String, type: GoalType, progress: Int){
-        self.goalDescLbl.text = description
-        self.goalTypeLbl.text = type.rawValue
-        self.goalProgressLbl.text = "\(progress)"
+    func configureCell(goal: Goal){
+        self.goalDescLbl.text = goal.goalDescription
+        self.goalTypeLbl.text = goal.goalType
+        self.goalProgressLbl.text = String(goal.goalCurrentValue)
     }
 
 }
