@@ -14,6 +14,7 @@ class GoalCell: UITableViewCell {
     @IBOutlet weak var goalDescLbl: UILabel!
     @IBOutlet weak var goalTypeLbl: UILabel!
     @IBOutlet weak var goalProgressLbl: UILabel!
+    @IBOutlet weak var completionView: UIView!
     
     
     override func awakeFromNib() {
@@ -31,6 +32,12 @@ class GoalCell: UITableViewCell {
         self.goalDescLbl.text = goal.goalDescription
         self.goalTypeLbl.text = goal.goalType
         self.goalProgressLbl.text = String(goal.goalCurrentValue)
+        
+        if goal.goalCurrentValue == goal.goalEndValue {
+            self.completionView.isHidden = false
+        } else {
+            self.completionView.isHidden = true
+        }
     }
 
 }

@@ -83,13 +83,38 @@ extension GoalsVC: UITableViewDelegate, UITableViewDataSource {
         }
         deleteAction.backgroundColor = #colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1)
         
-        let swipeActions = UISwipeActionsConfiguration(actions: [deleteAction])
+        let addAction = UIContextualAction(style: .normal, title: "ADD 1") { (contextualAction, view, boolValue) in
+            self.setProgress(atIndexPath: indexPath)
+            tableView.reloadRows(at: [indexPath], with: .automatic)
+        }
+        addAction.backgroundColor = #colorLiteral(red: 0.9385011792, green: 0.7164435983, blue: 0.3331357837, alpha: 1)
+        
+        let swipeActions = UISwipeActionsConfiguration(actions: [deleteAction, addAction])
         
         return swipeActions
     }
 }
 
 extension GoalsVC {
+    func setProgress(atIndexPath indexPath: IndexPath) {
+        guard let managedContext = appDelegate?.persistentContainer.viewContext else { return }
+        let selectedGoal = goals[indexPath.row]
+        
+        if selectedGoal.goalCurrentValue < selectedGoal.goalEndValue {
+            selectedGoal.goalCurrentValue = selectedGoal.goalCurrentValue + 1
+        } else {
+            return
+        }
+        
+        do {
+            try managedContext.save()
+            print("Successfully set progress")
+        } catch {
+            debugPrint("Could not set progress \(error.localizedDescription)")
+        }
+        
+    }
+    
     func fetch(_ completion: @escaping CompletionHandler) {
         guard let managedContext = appDelegate?.persistentContainer.viewContext else { return }
         let fetchRequest = NSFetchRequest<Goal>(entityName: "Goal")
