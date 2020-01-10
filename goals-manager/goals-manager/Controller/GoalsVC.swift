@@ -24,6 +24,12 @@ class GoalsVC: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        fetchCoreDataObjects()
+        self.tableview.reloadData()
+    }
+    
+    func fetchCoreDataObjects() {
         self.fetch { (success) in
             if success {
                 if self.goals.count > 0 {
@@ -33,7 +39,6 @@ class GoalsVC: UIViewController {
                 }
             }
         }
-        self.tableview.reloadData()
     }
 
     //Actions
@@ -60,7 +65,27 @@ extension GoalsVC: UITableViewDelegate, UITableViewDataSource {
         } else {
             return UITableViewCell()
         }
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return .none
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "DELETE") { (contextualAction, view, boolValue) in
+            self.removeGoal(atIndexPath: indexPath)
+            self.fetchCoreDataObjects()
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+        }
+        deleteAction.backgroundColor = #colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1)
         
+        let swipeActions = UISwipeActionsConfiguration(actions: [deleteAction])
+        
+        return swipeActions
     }
 }
 
@@ -76,6 +101,18 @@ extension GoalsVC {
         } catch {
             debugPrint("Could not fetch \(error.localizedDescription)")
             completion(false)
+        }
+    }
+    
+    func removeGoal(atIndexPath index: IndexPath) {
+        guard let managedContext = appDelegate?.persistentContainer.viewContext else { return }
+        managedContext.delete(goals[index.row])
+        
+        do {
+            try managedContext.save()
+            print("Successfully remove goal")
+        } catch {
+            debugPrint("Could not remove \(error.localizedDescription)")
         }
     }
 }
